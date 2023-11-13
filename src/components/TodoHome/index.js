@@ -5,11 +5,14 @@ import{ v4 as uuidv4 } from 'uuid'
 
 import Task from '../Task'
 
+// localStorage.removeItem('tasks')
+
 class TodoHome extends Component{
     constructor(){
         super()
         let tasks = localStorage.getItem('tasks')
-        tasks = [{task:'read book' , id:uuidv4() , completed:false}]
+        tasks = JSON.parse(tasks)
+      
         this.state={ tasks, inputValue:''}
     }
 
@@ -18,11 +21,25 @@ class TodoHome extends Component{
     }
 
     addTask = ()=>{
-        const {inputValue, tasks } = this.state 
+        let {inputValue, tasks } = this.state 
         const newTask = {id:uuidv4() , task:inputValue , completed:false}
+        if(tasks === null){
+            tasks = []
+        }
         tasks.push(newTask) 
+       
         this.setState({tasks, inputValue:''})
         
+    }
+
+    removeTask = (selectedId)=>{
+        const {tasks} = this.state
+        function finder(task){
+            return task.id === selectedId
+        }
+      const index = tasks.findIndex(finder)
+        tasks.splice(index, 1)
+        this.setState({tasks})
     }
 
     changeStatus = (selectedId)=>{
@@ -42,6 +59,12 @@ class TodoHome extends Component{
  
     }
 
+    savetoLstorage = ()=>{
+let {tasks }= this.state 
+tasks = JSON.stringify(tasks)
+localStorage.setItem('tasks' , tasks)
+    }
+
     render(){
         const {tasks , inputValue} = this.state
         
@@ -53,9 +76,11 @@ class TodoHome extends Component{
 
         <h2>Tasks</h2>
 
-        {
-            tasks.map((item)=><Task key={item.id} data={item} func={this.changeStatus} />)
+        { tasks !== null ?
+            tasks.map((item)=><Task key={item.id} data={item} changeFunc={this.changeStatus} deleteFunc={this.removeTask} />) : 
+            <p>Nothing to show here at the moment</p>
         }
+        <button className='btn btn-primary' type='buuton' onClick={this.savetoLstorage}>Save</button>
     </div>
     }
 }
