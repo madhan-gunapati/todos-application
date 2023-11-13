@@ -9,7 +9,7 @@ class TodoHome extends Component{
     constructor(){
         super()
         let tasks = localStorage.getItem('tasks')
-        tasks = ['read book']
+        tasks = [{task:'read book' , id:uuidv4() , completed:false}]
         this.state={ tasks, inputValue:''}
     }
 
@@ -19,13 +19,32 @@ class TodoHome extends Component{
 
     addTask = ()=>{
         const {inputValue, tasks } = this.state 
-        tasks.push(String(inputValue)) 
+        const newTask = {id:uuidv4() , task:inputValue , completed:false}
+        tasks.push(newTask) 
         this.setState({tasks, inputValue:''})
         
     }
 
+    changeStatus = (selectedId)=>{
+       
+        this.setState((p)=>({
+          tasks: p.tasks.map((item)=>{
+            if(item.id === selectedId){
+                
+               
+                return {...item , completed : !item.completed}
+            }
+
+            return item
+          })
+             } ))
+
+ 
+    }
+
     render(){
         const {tasks , inputValue} = this.state
+        
         return <div>
         <h1>Todos Application</h1>
         <input value={inputValue} type='text' placeholder='Enter the task ...!' onChange={this.changeInput} />
@@ -35,7 +54,7 @@ class TodoHome extends Component{
         <h2>Tasks</h2>
 
         {
-            tasks.map((item)=><Task key={uuidv4()} data={item} />)
+            tasks.map((item)=><Task key={item.id} data={item} func={this.changeStatus} />)
         }
     </div>
     }
