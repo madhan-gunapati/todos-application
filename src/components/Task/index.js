@@ -11,11 +11,11 @@ class Task extends Component{
 
         render(){
             const {data , changeFunc , deleteFunc} = this.props
-            const {id, task ,completed } = data
+            const {id, task ,STATUS } = data
          
             return <div className="d-flex flex-row align-items-center">
-            <input id={id} type='checkbox' checked={completed} onChange={()=>{changeFunc(id)}}  />
-             <label htmlFor={id} className={completed?"text-decoration-line-through"  :""}  >{task}</label>
+            <input id={id} type='checkbox' checked={STATUS} onChange={()=>{changeFunc(id)}}  />
+             <label htmlFor={id} className={STATUS?"text-decoration-line-through"  :""}  >{task}</label>
               
                
                 <button type='button' className="ml-2 btn btn-primary" onClick={()=>{deleteFunc(id)}}>Delete</button>

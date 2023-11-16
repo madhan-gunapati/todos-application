@@ -1,6 +1,8 @@
 
 import {Component} from 'react'
 
+import { TailSpin} from 'react-loader-spinner'
+
 import{ v4 as uuidv4 } from 'uuid'
 
 import Task from '../Task'
@@ -10,11 +12,29 @@ import Task from '../Task'
 class TodoHome extends Component{
     constructor(){
         super()
-        let tasks = localStorage.getItem('tasks')
-        tasks = JSON.parse(tasks)
+        // let tasks = localStorage.getItem('tasks')
+        // tasks = JSON.parse(tasks)
       
-        this.state={ tasks, inputValue:''}
+        this.state={ tasks:[], inputValue:''}
     }
+
+componentDidMount(){
+
+    this.fetchDetails()
+}
+
+fetchDetails =async ()=>{
+    const url = 'http://localhost:3001'
+    const options = {
+        method:'GET',
+        
+    }
+    const result = await fetch(url , options)
+    const parsedResult = await result.json()
+    
+    this.setState({tasks:parsedResult})
+
+}
 
     changeInput = (e)=>{
         this.setState({inputValue:e.target.value})
@@ -22,7 +42,7 @@ class TodoHome extends Component{
 
     addTask = ()=>{
         let {inputValue, tasks } = this.state 
-        const newTask = {id:uuidv4() , task:inputValue , completed:false}
+        const newTask = {id:uuidv4() , task:inputValue , STATUS:0}
         if(tasks === null){
             tasks = []
         }
@@ -49,7 +69,7 @@ class TodoHome extends Component{
             if(item.id === selectedId){
                 
                
-                return {...item , completed : !item.completed}
+                return {...item , STATUS : !item.STATUS}
             }
 
             return item
@@ -59,10 +79,25 @@ class TodoHome extends Component{
  
     }
 
-    savetoLstorage = ()=>{
-let {tasks }= this.state 
-tasks = JSON.stringify(tasks)
-localStorage.setItem('tasks' , tasks)
+    savetoDB = async ()=>{
+            let {tasks }= this.state 
+            // tasks = JSON.stringify(tasks)
+            console.log(tasks)
+            const url = `http://localhost:3001/tasks`
+            const options = {
+                     method:'POST',
+                     headers:{
+                            'Content-Type':'application/json',
+                           
+
+                            },
+                     body:JSON.stringify(tasks)
+
+                            }
+            const result = await fetch(url , options)
+            console.log(result.status)
+
+            //localStorage.setItem('tasks' , tasks)
     }
 
     render(){
@@ -75,12 +110,16 @@ localStorage.setItem('tasks' , tasks)
 
 
         <h2>Tasks</h2>
-
+        {
+        tasks.length === 0?
+      
+      <TailSpin className='p-2' color='black' height={50} width={50} /> : ''
+        }
         { tasks !== null ?
             tasks.map((item)=><Task key={item.id} data={item} changeFunc={this.changeStatus} deleteFunc={this.removeTask} />) : 
             <p>Nothing to show here at the moment</p>
         }
-        <button className='btn btn-primary' type='buuton' onClick={this.savetoLstorage}>Save</button>
+        <button className='btn btn-primary' type='buuton' onClick={this.savetoDB}>Save</button>
     </div>
     }
 }
