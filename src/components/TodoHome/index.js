@@ -24,7 +24,7 @@ componentDidMount(){
 }
 
 fetchDetails =async ()=>{
-    const url = 'http://localhost:3001'
+    const url = 'https://todos-node-backend.vercel.app/'
     const options = {
         method:'GET',
         
@@ -83,7 +83,7 @@ fetchDetails =async ()=>{
             let {tasks }= this.state 
             // tasks = JSON.stringify(tasks)
             console.log(tasks)
-            const url = `http://localhost:3001/tasks`
+            const url = `https://todos-node-backend.vercel.app/tasks`
             const options = {
                      method:'POST',
                      headers:{
